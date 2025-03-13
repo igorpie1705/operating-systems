@@ -3,10 +3,13 @@ CFLAGS = -Wall -Wextra -std=c11 -g
 
 all: countdown
 
-countdown: countdown.c
-	$(CC) $(CFLAGS) countdown.c -o countdown
+countdown: countdown.o
+	$(CC) $(CFLAGS) countdown.o -o countdown
+
+countdown.o: countdown.c
+	$(CC) $(CFLAGS) -c countdown.c -o countdown.o
 
 clean:
-	rm -f countdown
+	rm -f countdown countdown.o
 
 .PHONY: all countdown clean
