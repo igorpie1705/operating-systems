@@ -12,4 +12,4 @@ countdown.o: countdown.c
 clean:
 	rm -f countdown countdown.o
 
-.PHONY: all countdown clean
+.PHONY: all clean
