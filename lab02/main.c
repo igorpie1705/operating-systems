@@ -31,7 +31,7 @@ int main() {
   ptr_test_collatz_convergence = dlsym(handle, "test_collatz_convergence");
 
   if (dlerror() != NULL) {
-    fprintf(stderr, "Błąd pobierania funkcji: %s\n", dlerror());
+    fprintf(stderr, "Error when loading function: %s\n", dlerror());
     dlclose(handle);
     return 1;
   }
