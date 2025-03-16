@@ -1,34 +1,32 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -g
-AR = ar
-ARFLAGS = rcs
+LDFLAGS = -ldl
 
-SRC_DIR = src
-BUILD_DIR = build
+all: static shared dynamic
 
-LIB_NAME = libcollatz.a
-LIB_OBJ = $(BUILD_DIR)/collatz.o
-MAIN_OBJ = $(BUILD_DIR)/main.o
-TARGET = $(BUILD_DIR)/static_client
+static: libcollatz.a client_static
 
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+shared: libcollatz.so client_shared
 
-$(LIB_OBJ): $(SRC_DIR)/collatz.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+dynamic: libcollatz.so client_dynamic
 
-$(MAIN_OBJ): $(SRC_DIR)/main.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+libcollatz.a: collatz.o
+	ar rcs libcollatz.a collatz.o
 
-$(BUILD_DIR)/$(LIB_NAME): $(LIB_OBJ)
-	$(AR) $(ARFLAGS) $@ $^
+libcollatz.so: collatz.o
+	$(CC) -shared -o libcollatz.so collatz.o
 
-$(TARGET): $(MAIN_OBJ) $(BUILD_DIR)/$(LIB_NAME)
-	$(CC) $(CFLAGS) $^ -o $@
+collatz.o: collatz.c collatz.h
+	$(CC) $(CFLAGS) -c -fPIC collatz.c
 
-static_client: $(TARGET)
+client_static: main.c libcollatz.a
+	$(CC) $(CFLAGS) -o client_static main.c libcollatz.a
+
+client_shared: main.c libcollatz.so
+	$(CC) $(CFLAGS) -o client_shared main.c -L. -lcollatz
+
+client_dynamic: main.c libcollatz.so
+	$(CC) $(CFLAGS) -DDYNAMIC_LOAD -o client_dynamic main.c $(LDFLAGS)
 
 clean:
-	rm -rf $(BUILD_DIR)
-
-.PHONY: clean
+	rm -f *.o *.a *.so client_static client_shared client_dynamic
