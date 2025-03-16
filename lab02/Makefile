@@ -23,7 +23,7 @@ client_static: main.c libcollatz.a
 	$(CC) $(CFLAGS) -o client_static main.c libcollatz.a
 
 client_shared: main.c libcollatz.so
-	$(CC) $(CFLAGS) -o client_shared main.c -L. -lcollatz
+	$(CC) $(CFLAGS) -o client_shared main.c -L. -Wl,-rpath,. -lcollatz
 
 client_dynamic: main.c libcollatz.so
 	$(CC) $(CFLAGS) -DDYNAMIC_LOAD -o client_dynamic main.c $(LDFLAGS)
