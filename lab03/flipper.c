@@ -5,7 +5,19 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-void reverse_line() { return; }
+void reverse_line(char *line) {
+  size_t len = strlen(line);
+  if (len > 0 && line[len - 1] == '\n') {
+    line[len - 1] = '\0'; // Usuniecie znaku nowej linii
+    len--;
+  }
+
+  for (size_t i = 0; i < len / 2; i++) {
+    char temp = line[i];
+    line[i] = line[len - i - 1];
+    line[len - i - 1] = temp;
+  }
+}
 
 void process_file(const char *input_path, const char *output_path) {
   FILE *input_file = fopen(input_path, "r");
@@ -23,10 +35,12 @@ void process_file(const char *input_path, const char *output_path) {
 
   char buffer[1024];
   while (fgets(buffer, sizeof(buffer), input_file)) {
-    buffer[strcspn(buffer, "\n")] = "\0"; // Usuniecie znaku nowej linii
     reverse_line(buffer);
     fprintf(output_file, "%s\n", buffer);
   }
+
+  fclose(input_file);
+  fclose(output_file);
 }
 
 void process_directory(const char *source_dir, const char *output_dir) {
@@ -43,17 +57,18 @@ void process_directory(const char *source_dir, const char *output_dir) {
   mkdir(output_dir, 0755);
 
   while ((entry = readdir(dir)) != NULL) {
-    printf(input_path, sizeof(input_path), "%s/%s", source_dir, entry->d_name);
-    printf(output_path, sizeof(output_path), "%s/%s", output_dir,
-           entry->d_name);
+    snprintf(input_path, sizeof(input_path), "%s/%s", source_dir,
+             entry->d_name);
+    snprintf(output_path, sizeof(output_path), "%s/%s", output_dir,
+             entry->d_name);
 
     if (stat(input_path, &statbuf) == 0) {
       if (strstr(entry->d_name, ".txt")) {
         process_file(input_path, output_path);
       }
     }
-    closedir(dir);
   }
+  closedir(dir);
 }
 
 int main(int argc, char *argv[]) {
