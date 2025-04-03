@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
   if (mode == MASK) {
     sigpending(&sigset);
     if (sigismember(&sigset, SIGUSR1)) {
-      printf("SIGUSR1 jest w trybie oczekiwania.\n");
+      printf("SIGUSR1 jest widoczny i w trybie oczekiwania.\n");
     }
   }
   return 0;
